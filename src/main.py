@@ -1,10 +1,9 @@
 import json
 import sys
 from argparse import ArgumentParser, Namespace
-from copy import deepcopy
 from pathlib import Path
 
-from templates import CELL, IPYNB_JSON, WF
+import nbformat as nbf
 
 
 def generate_target_files(root: Path) -> list[Path]:
@@ -27,7 +26,7 @@ def construct_mkdir_commands(folders: list[Path]) -> str:
     return "\n".join(templates)
 
 
-def dump_ipynb(ipynb_json, path):
+def dump_ipynb(ipynb_json, path) -> None:
     if path is None:
         json.dump(ipynb_json, sys.stdout, indent=2)
     else:
@@ -40,18 +39,17 @@ def main(args: Namespace):
     folders = unique_folders(files)
     mkdir_cmds = construct_mkdir_commands(folders)
 
-    ipynb_json = deepcopy(IPYNB_JSON)
+    ipynb_json = nbf.v4.new_notebook()
 
     # topmost mkdir cells
-    mkdir_cell = deepcopy(CELL)
-    mkdir_cell["source"] = mkdir_cmds
+    mkdir_cell = nbf.v4.new_code_cell(mkdir_cmds)
     ipynb_json["cells"].append(mkdir_cell)
 
     # code cells
     for file in files:
         content = file.read_text()
-        file_cell = deepcopy(CELL)
-        file_cell["source"] = WF.format(file, content).strip()
+        wf = f'%%writefile "{file}"\n{content}'.strip()
+        file_cell = nbf.v4.new_code_cell(wf)
         ipynb_json["cells"].append(file_cell)
 
     # output ipynb
@@ -64,5 +62,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-o", "--out", type=str, help="Filename to dump (.ipynb), defaults to stdout"
     )
+    parser.add_argument("--extra-")
     args = parser.parse_args()
     main(args)
