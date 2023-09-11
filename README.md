@@ -2,7 +2,6 @@
 Dump files to Jupyter notebook.
 
 # Installation
-Currently `nbdump` is only a CLI, cannot be used as a library
 ```bash
 # user
 pip install -U nbdump
