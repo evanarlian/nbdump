@@ -1,51 +1,28 @@
 import json
-import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 import nbformat as nbf
 
-
-def generate_target_files(paths: list[str]) -> list[Path]:
-    """
-    Given a list of path:
-    * If element is a dir, recursively add subfiles
-    * If element is a file, add as is
-    * Ignore the rest
-
-    Args:
-        root (list[str]): List of paths entered by user
-
-    Returns:
-        list[Path]: list of file path, no directories
-    """
-    unique_paths = set()
-    for path in paths:
-        path = Path(path)
-        if not path.exists():
-            print(f"[WARN] {path} does not exist, skipped.", file=sys.stderr)
-        elif path.is_dir():
-            unique_paths |= set([p for p in path.rglob("*.*") if p.is_file()])
-        elif path.is_file():
-            unique_paths.add(path)
-        else:
-            print(f"[WARN] {path} is not supported, skipped.", file=sys.stderr)
-    return sorted(unique_paths)
+from nbdump.helper import construct_mkdir_commands, dedup_folders, generate_target_files
 
 
-def dedup_folders(files: list[Path]) -> list[Path]:
-    """Extract parent folders from given paths"""
-    unique_folders = {file.parent for file in files}
-    unique_folders.discard(Path("."))
-    return sorted(unique_folders)
+def get_args() -> Namespace:
+    parser = ArgumentParser()
+    parser.add_argument("files", nargs="+", help="Files to write to notebook")
+    parser.add_argument(
+        "-o", "--out", type=Path, required=True, help="Filepath to dump (.ipynb)"
+    )
+    parser.add_argument(
+        "-c", "--code", default=[], action="append", help="Extra code cell to add"
+    )
+    # TODO quiet + version? version need to quit immediately
+    args = parser.parse_args()
+    return args
 
 
-def construct_mkdir_commands(folders: list[Path]) -> str:
-    """Make mkdir commands so that %%writefile does not fail"""
-    return "\n".join([f'!mkdir -p "{folder}"' for folder in folders])
-
-
-def main(args: Namespace):
+def main():
+    args = get_args()
     files = generate_target_files(args.files)
     folders = dedup_folders(files)
     mkdir_cmds = construct_mkdir_commands(folders)
@@ -74,17 +51,3 @@ def main(args: Namespace):
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w") as f:
         json.dump(ipynb_json, f)
-
-
-if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument("files", nargs="+", help="Files to write to notebook")
-    parser.add_argument(
-        "-o", "--out", type=Path, required=True, help="Filename to dump (.ipynb)"
-    )
-    parser.add_argument(
-        "-c", "--code", default=[], action="append", help="Extra code cell to add"
-    )
-    # TODO quiet + version?
-    args = parser.parse_args()
-    main(args)
