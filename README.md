@@ -41,7 +41,7 @@ nbdump src_example -o notebooks/nb6.ipynb
 ```
 There is a catch, `nbdump` will not respect gitignore because the core functionality is just converting a bunch of files to notebook cells. This means, by using the first example on `nb1.ipynb`, `nbdump` will try to convert all files recursively, regardless of file format. The problem arises when `src_example/` contains binary files such as pictures or even `__pycache__/*`.
 
-Then shell expansion can be used to only select relevant files, such as the example on `nb2.ipynb`. Another solution is to use other tools like [fd](https://github.com/sharkdp/fd) to list the files while respecting gitignore and skipping hidden files automatically.
+Then shell expansion can be used to only select relevant files, such as the example on `nb2.ipynb` (make sure to enable globstar in bash to use `**`). Another solution is to use other tools like [fd](https://github.com/sharkdp/fd) to list the files while respecting gitignore and skipping hidden files automatically.
 
 ```bash
 # use fd to skip ignored files and hidden files
