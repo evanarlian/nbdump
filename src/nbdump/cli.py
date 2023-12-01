@@ -4,6 +4,7 @@ from pathlib import Path
 
 import nbformat as nbf
 
+from nbdump import __version__
 from nbdump.helper import construct_mkdir_commands, dedup_folders, generate_target_files
 
 
@@ -16,7 +17,9 @@ def get_args() -> Namespace:
     parser.add_argument(
         "-c", "--code", default=[], action="append", help="Extra code cell to add"
     )
-    # TODO quiet + version? version need to quit immediately
+    parser.add_argument(
+        "-V", "--version", action="version", version=f"%(prog)s {__version__}"
+    )
     args = parser.parse_args()
     return args
 
