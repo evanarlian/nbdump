@@ -5,7 +5,7 @@ from pathlib import Path
 import nbformat as nbf
 
 from nbdump import __version__
-from nbdump.helper import construct_mkdir_commands, dedup_folders, generate_target_files
+from nbdump.core import construct_mkdir_commands, dedup_folders, generate_target_files
 
 
 def get_args() -> Namespace:

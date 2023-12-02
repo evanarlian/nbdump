@@ -1,4 +1,7 @@
+import io
+import json
 import sys
+from io import TextIOBase
 from pathlib import Path
 
 
@@ -39,3 +42,16 @@ def dedup_folders(files: list[Path]) -> list[Path]:
 def construct_mkdir_commands(folders: list[Path]) -> str:
     """Make mkdir commands so that %%writefile does not fail"""
     return "\n".join([f'!mkdir -p "{folder}"' for folder in folders])
+
+
+def extract_metadata(f: TextIOBase) -> dict:
+    """Return metadata from ipynb.
+
+    Args:
+        f (TextIOBase): File like object for json
+
+    Returns:
+        dict: extracted metadata
+    """
+    ipynb = json.load(f)
+    return ipynb.get("metadata", {})
