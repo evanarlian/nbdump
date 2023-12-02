@@ -22,7 +22,7 @@ def generate_target_files(paths: list[str | Path]) -> list[Path]:
     for path in paths:
         path = Path(path)
         if not path.exists():
-            raise FileNotFoundError(f"{path} does not exist")
+            raise FileNotFoundError(f"{path} does not exist.")
         elif path.is_dir():
             unique_paths |= set([p for p in path.rglob("*.*") if p.is_file()])
         elif path.is_file():
