@@ -11,18 +11,16 @@ def test_extract_metadata():
         "cells": []
     }"""
     sio = StringIO(ipynb_string)
-    metadata = {"can": "be", "anything": "really"}
     extracted = extract_metadata(sio)
-    assert extracted == metadata
+    assert extracted == {"can": "be", "anything": "really"}
 
 
-def test_extract_no_metadata():
+def test_extract_missing_metadata():
     ipynb_string = """{
         "nbformat_minor": 4,
         "nbformat": 4,
         "cells": []
     }"""
     sio = StringIO(ipynb_string)
-    metadata = {}
     extracted = extract_metadata(sio)
-    assert extracted == metadata
+    assert extracted == {}
