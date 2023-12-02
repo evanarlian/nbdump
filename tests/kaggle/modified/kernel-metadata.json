@@ -1,0 +1,23 @@
+{
+  "id": "evanarlian/modified-notebook",
+  "id_no": 47180332,
+  "title": "modified notebook",
+  "code_file": "modified-notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "zalando-research/fashionmnist"
+  ],
+  "kernel_sources": [
+    "evanarlian/output-notebook"
+  ],
+  "competition_sources": [
+    "titanic"
+  ],
+  "model_sources": []
+}
