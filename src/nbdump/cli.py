@@ -4,8 +4,8 @@ from pathlib import Path
 from nbdump import __version__
 from nbdump.core import dump
 
-if __name__ == "__main__":
-    # args
+
+def main():
     parser = ArgumentParser()
     parser.add_argument("files", nargs="+", help="Files to write to notebook")
     parser.add_argument(
@@ -23,3 +23,7 @@ if __name__ == "__main__":
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w") as f:
         dump(f, args.files, args.code)
+
+
+if __name__ == "__main__":
+    main()
