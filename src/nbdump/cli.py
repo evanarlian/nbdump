@@ -15,6 +15,13 @@ def main():
         "-c", "--code", default=[], action="append", help="Extra code cell to add"
     )
     parser.add_argument(
+        "-m",
+        "--metadata",
+        type=Path,
+        required=False,
+        help="Notebook path to clone metadata from",
+    )
+    parser.add_argument(
         "-V", "--version", action="version", version=f"%(prog)s {__version__}"
     )
     args = parser.parse_args()
@@ -22,7 +29,7 @@ def main():
     # main cli operation
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w") as f:
-        dump(f, args.files, args.code)
+        dump(f, args.files, args.code, args.metadata)
 
 
 if __name__ == "__main__":

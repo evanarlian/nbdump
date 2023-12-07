@@ -15,6 +15,7 @@ pytest
 # Usage
 In this demo, we will use `src_example/` as a fake repo that you want to import to notebook.
 
+## CLI
 ```bash
 # see help
 nbdump -h
@@ -39,10 +40,32 @@ nbdump src_example \
 
 # use fd to skip ignored files and hidden files
 nbdump $(fd -t f . src_example) -o nb6.ipynb
+
+# clone metadata from another notebook
+nbdump src_example/**/*.py -o nb7.ipynb -m tests/kaggle/modified/modified-notebook.ipynb
 ```
 There is a catch, `nbdump` will not respect gitignore because the core functionality is just converting a bunch of files to notebook cells. This means, by using the first example on `nb1.ipynb`, `nbdump` will try to convert all files recursively, regardless of file format. The problem arises when `src_example/` contains binary files such as pictures or even `__pycache__/*`.
 
 Then shell expansion can be used to only select relevant files, such as the example on `nb2.ipynb` (make sure to enable globstar in bash to use `**`). Another solution is to use other tools like [fd](https://github.com/sharkdp/fd) to list the files while respecting gitignore and skipping hidden files automatically.
+
+## Library
+```python
+from pathlib import Path
+import nbdump
+
+
+target_files = list(Path("src_example").rglob("*.py"))
+codes = ["!ls -lah", "!git log --oneline", "%run src_example/main.py"]
+metadata_notebook = "tests/kaggle/modified/modified-notebook.ipynb"
+
+# save to disk
+with open("nb8.ipynb", "w") as f:
+    nbdump.dump(f, target_files, codes, metadata_notebook)
+
+# save as string
+ipynb = nbdump.dumps(target_files, codes, metadata_notebook)
+print(ipynb[:50])
+```
 
 # Why?
 Kaggle kernel with *code competition* type with disabled internet cannot use git clone inside the notebook. `nbdump` allows one to work in a standard environment but the final result can be exported to a single notebook, while still preserving the filesystem tree.

@@ -74,7 +74,10 @@ def extract_metadata(f: TextIOBase) -> dict:
 
 
 def dump(
-    f: TextIOBase, paths: list[str | Path], codes: list[str] | None = None
+    f: TextIOBase,
+    paths: list[str | Path],
+    codes: list[str] | None = None,
+    metadata: str | Path | None = None,
 ) -> None:
     """Dump files and extra code cells to jupyter notebook.
     Files will be added as is, directories will recursively include,
@@ -82,8 +85,9 @@ def dump(
 
     Args:
         f (TextIOBase): File-like object for json
-        paths (list[str | Path]): Files or directories for dumping
-        codes (list[str]): Extra code cell to append to notebook
+        paths (list[str  |  Path]): Files or directories for dumping
+        codes (list[str] | None, optional): Extra code cell to append to notebook
+        metadata (str | Path | None, optional): Notebook filepath to copy metadata from
     """
     if codes is None:
         codes = []
@@ -92,6 +96,11 @@ def dump(
     mkdir_cmds = make_mkdir_commands(folders)
 
     ipynb = nbf.v4.new_notebook()
+
+    # clone metadata from another notebook
+    if metadata is not None:
+        with open(metadata, "r") as meta:
+            ipynb["metadata"] = extract_metadata(meta)
 
     # topmost mkdir cells
     if mkdir_cmds != "":
@@ -115,18 +124,23 @@ def dump(
     json.dump(ipynb, f)
 
 
-def dumps(paths: list[str | Path], codes: list[str] | None = None) -> str:
+def dumps(
+    paths: list[str | Path],
+    codes: list[str] | None = None,
+    metadata: str | Path | None = None,
+) -> str:
     """Dump files and extra code cells as jupyter notebook string.
     Files will be added as is, directories will recursively include,
     and ignore anything else.
 
     Args:
-        paths (list[str | Path]): Files or directories for dumping
-        codes (list[str]): Extra code cell to append to notebook
+        paths (list[str  |  Path]): Files or directories for dumping
+        codes (list[str] | None, optional): Extra code cell to append to notebook
+        metadata (str | Path | None, optional): Notebook filepath to copy metadata from
 
     Returns:
         str: ipynb (jupyter notebook) json string
     """
     with StringIO() as sio:
-        dump(sio, paths, codes)
+        dump(sio, paths, codes, metadata)
         return sio.getvalue()
