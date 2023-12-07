@@ -89,12 +89,16 @@ def dump(
         codes (list[str] | None, optional): Extra code cell to append to notebook
         metadata (str | Path | None, optional): Notebook filepath to copy metadata from
     """
+    if isinstance(paths, (str, Path)):
+        raise TypeError("paths must be iterable, but not string or Path")
+    if isinstance(codes, str):
+        raise TypeError("codes must be iterable, but not string")
     if codes is None:
         codes = []
+
     files = generate_target_files(paths)
     folders = get_parent_folders(files)
     mkdir_cmds = make_mkdir_commands(folders)
-
     ipynb = nbf.v4.new_notebook()
 
     # clone metadata from another notebook
